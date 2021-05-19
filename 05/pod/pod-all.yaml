@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Pod
+metadata:
+    name: kubernetes-simple-pod
+    labels:
+        app: kubernetes-simple-pod
+spec:
+    initContainers:
+    - name: init-myservice
+      image: arisu1000/simple-container-app:latest
+      command: ['sh', '-c', 'sleep 2; echo helloworld01;']
+    - name: init-mydb
+      image: arisu1000/simple-container-app:latest
+      command: ['sh', '-c', 'sleep 2; echo helloworld02;']
+    containers:
+    - name: kubernetes-simple-pod
+      image: arisu1000/simple-container-app:latest
+      command: ['sh', '-c', 'echo The app is running! && sleep 3600']
+      resources:
+        requests:
+            cpu: 0.1
+            memory: 200M
+        limits:
+            cpu: 0.5
+            memory: 1G
+      ports:
+      - containerPort: 8080
+      env:
+      - name: TESTENV01
+        value: "testvalue01"
+      - name: HOSTNAME
+        valueFrom:
+            fieldRef:
+                fieldPath: spec.nodeName
+      - name: POD_NAME
+        valueFrom:
+            fieldRef:
+                fieldPath: metadata.name
+      - name: POD_ID
+        valueFrom:
+            fieldRef:
+                fieldPath: status.podIP
+      - name: CPU_REQUEST
+        valueFrom:
+            resourceFieldRef:
+                containerName: kubernetes-simple-pod
+                resource: requests.cpu
+      - name: CPU_LIMIT
+        valueFrom:
+            resourceFieldRef:
+                containerName: kubernetes-simple-pod
+                resource: limits.cpu
