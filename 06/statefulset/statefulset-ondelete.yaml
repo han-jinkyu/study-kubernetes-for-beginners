@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web-ondelete
+spec:
+  selector:
+    matchLabels:
+      app: nginx-statefulset
+  serviceName: "nginx-statefulset-service"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nginx-statefulset
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: nginx-statefulset
+        image: nginx
+        ports:
+        - containerPort: 80
+          name: web
+        env:
+          - name: testenv
+            value: testvalue01
+  updateStrategy:
+    type: OnDelete
