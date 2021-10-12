@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-client
+  labels:
+    app: nfs-client
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nfs-client
+  template:
+    metadata:
+      labels:
+        app: nfs-client
+    spec:
+      containers:
+        - name: kubernetes-nfsapp-pod
+          image: arisu1000/simple-container-app:latest
+          volumeMounts:
+            - mountPath: /test-nfs    # nfs 볼륨을 마운트할 디렉터리
+              name: nfs-vol
+          ports:
+          - containerPort: 8080
+      volumes:
+        - name: nfs-vol
+          nfs:
+            path: /
+            server: 10.1.0.8
